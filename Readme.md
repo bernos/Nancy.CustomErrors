@@ -11,6 +11,10 @@ This work is *heavily* influenced by Paul Stovell's excellent [Consistent error 
 
 ## Installation
 
+Use Nuget!
+
+	Install-Package Nancy.CustomErrors
+
 ## Usage
 
 ### Bootstrapping
