@@ -17,7 +17,7 @@ This work is *heavily* influenced by Paul Stovell's excellent [Consistent error 
 
 Custom error handling is set up in the ApplicationStartup method of your Nancy Bootstrapper. In its simplest form, your simply call Nancy.CustomErrors.Enable, passing an IPipelines instance.
 
-	::: c#
+	:::c#
 	protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
 	{
 		base.ApplicationStartup(container, pipelines);
@@ -34,7 +34,7 @@ In this form, default configuration options will be assumed. The default configu
 
 Setting up custom configuration is a simple case of implementing an configuration class that extends Nancy.CustomErrors.CustomErrorsConfiguration, and passing an instance of the class along in the call to CustomErrors.Enable()
 
-	::: c#
+	:::c#
 	public class MyErrorConfiguration : Nancy.CustomErrors.CustomErrorsConfiguration
 	{
 		public MyErrorConfiguration() : base()
@@ -75,7 +75,7 @@ Setting up custom configuration is a simple case of implementing an configuratio
 
 Once you've implemented a custom error handling configuration, just pass it along in the CustomErrors.Enable call in your bootstrapper
 
-	::: c#
+	:::c#
 	protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
 	{
 		base.ApplicationStartup(container, pipelines);
@@ -92,7 +92,7 @@ We use whatever view engine is presently configured in your project. By default 
 
 Here is a simple example using the Razor view engine
 	
-	::: html
+	:::html
 	@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
 	
 	<h1>Ouch!</h1>
