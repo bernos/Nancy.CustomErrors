@@ -63,7 +63,8 @@ namespace Nancy.CustomErrors
                         context.Response = RenderView(context, CustomErrors.Configuration.ErrorViews[HttpStatusCode.Forbidden], new
                         {
                             Title = "Forbidden",
-                            Summary = error == null ? "You do not have permission to do that." : error.ErrorMessage
+                            Summary = error == null ? "You do not have permission to do that." : error.ErrorMessage,
+                            Details = error == null ? "" : error.FullException
                         }).WithStatusCode(statusCode);
                     }
                     else
@@ -76,7 +77,8 @@ namespace Nancy.CustomErrors
                     context.Response = RenderView(context, CustomErrors.Configuration.ErrorViews[HttpStatusCode.Forbidden], new
                     {
                         Title = "Forbidden",
-                        Summary = error == null ? "You do not have permission to do that." : error.ErrorMessage
+                        Summary = error == null ? "You do not have permission to do that." : error.ErrorMessage,
+                        Details = error == null ? "" : error.FullException
                     }).WithStatusCode(statusCode);
 
                     break;
@@ -84,7 +86,8 @@ namespace Nancy.CustomErrors
                     context.Response = RenderView(context, CustomErrors.Configuration.ErrorViews[HttpStatusCode.NotFound], new
                     {
                         Title = "404 Not Found",
-                        Summary = "Sorry, the resource you requested was not found."
+                        Summary = "Sorry, the resource you requested was not found.",
+                        Details = error == null ? "" : error.FullException
                     }).WithStatusCode(statusCode); ;
                     
                     break;
@@ -93,7 +96,7 @@ namespace Nancy.CustomErrors
                     {
                         Title = "Sorry, something went wrong",
                         Summary = error == null ? "An unexpected error occurred." : error.ErrorMessage,
-                        Details = error == null ? null : error.FullException
+                        Details = error == null ? "" : error.FullException
                     }).WithStatusCode(statusCode); ;
                     break;
             }
