@@ -27,8 +27,11 @@ Custom error handling is set up in the ApplicationStartup method of your Nancy B
 	}
 
 In this form, default configuration options will be assumed. The default configuration assumes the following
+
 - Any and all unhandled exceptions will generate a response with a 500 HTTP status code
 - Any request with an Accept header containing a recognised json type will be served with a JSON representation of the error, rather than a rendered view
+
+*Note that if you are using the Nancy.Elmah package, ElmahLogging.Enable() should be called before CustomErrors.Enable()* 
 
 ### Configuration
 
