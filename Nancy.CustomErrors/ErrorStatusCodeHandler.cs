@@ -45,6 +45,20 @@ namespace Nancy.CustomErrors
                     {
                         Message = "The requested resource could not be found"
                     }, _serializer).WithStatusCode(statusCode);
+                } 
+                else if (!(context.Response is ErrorResponse))
+                {
+                    switch (statusCode)
+                    {
+                        case HttpStatusCode.Forbidden :
+                        case HttpStatusCode.Unauthorized :
+                            context.Response = new ErrorResponse(new Error
+                            {
+                                Message = "You do not have permission to do that"
+                            }).WithStatusCode(statusCode);
+                            break;
+                        
+                    }
                 }
 
                 // Pass the existing response through

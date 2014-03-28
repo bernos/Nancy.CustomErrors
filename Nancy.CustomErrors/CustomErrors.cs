@@ -11,49 +11,35 @@ namespace Nancy.CustomErrors
         {
             get
             {
-                if (_configuration == null)
-                {
-                    _configuration = new CustomErrorsConfiguration();
-                }
                 return _configuration;
             }
         }
 
-        public static CustomErrors Enable(IPipelines pipelines)
+        public static void Enable(IPipelines pipelines, CustomErrorsConfiguration configuration)
         {
-            return Enable(pipelines, new CustomErrorsConfiguration());
+            Enable(pipelines, configuration, new DefaultJsonSerializer());
         }
 
-        public static CustomErrors Enable(IPipelines pipelines, ISerializer serializer)
+        public static void Enable(IPipelines pipelines, CustomErrorsConfiguration configuration, ISerializer serializer)
         {
-            return Enable(pipelines, new CustomErrorsConfiguration(), serializer);
-        }
+            if (pipelines == null)
+            {
+                throw new ArgumentNullException("pipelines");
+            }
 
-        public static CustomErrors Enable(IPipelines pipelines, CustomErrorsConfiguration configuration)
-        {
-            return Enable(pipelines, configuration, new DefaultJsonSerializer());
-        }
+            if (configuration == null)
+            {
+                throw new ArgumentNullException("configuration");
+            }
 
-        public static CustomErrors Enable(IPipelines pipelines, CustomErrorsConfiguration configuration, ISerializer serializer)
-        {
             _configuration = configuration;
-            var customErrors = new CustomErrors(serializer);
-
-            pipelines.OnError.AddItemToEndOfPipeline(customErrors.HandleError);
-
-            return customErrors;
+            
+            pipelines.OnError.AddItemToEndOfPipeline(GetErrorHandler(configuration, serializer));
         }
 
-        private CustomErrors(ISerializer serializer)
+        private static Func<NancyContext, Exception, Response> GetErrorHandler(CustomErrorsConfiguration configuration, ISerializer serializer)
         {
-            _serializer = serializer;
-        }
-
-        private readonly ISerializer _serializer;
-
-        private Response HandleError(NancyContext context, Exception e)
-        {
-            return Configuration.HandleError(context, e, _serializer);
+            return (context, ex) => configuration.HandleError(context, ex, serializer);
         }
     }
 }
