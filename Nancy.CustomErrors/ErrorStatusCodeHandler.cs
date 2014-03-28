@@ -56,22 +56,13 @@ namespace Nancy.CustomErrors
             switch (statusCode)
             {
                 case HttpStatusCode.Unauthorized:
-                    var redirectUrl = CustomErrors.Configuration.GetAuthorizationUrl(context);
-
-                    if (string.IsNullOrEmpty(redirectUrl))
+                    context.Response = RenderView(context, CustomErrors.Configuration.ErrorViews[HttpStatusCode.Forbidden], new
                     {
-                        context.Response = RenderView(context, CustomErrors.Configuration.ErrorViews[HttpStatusCode.Forbidden], new
-                        {
-                            Title = "Forbidden",
-                            Summary = error == null ? "You do not have permission to do that." : error.ErrorMessage,
-                            Details = error == null ? "" : error.FullException
-                        }).WithStatusCode(statusCode);
-                    }
-                    else
-                    {
-                        context.Response = new RedirectResponse(redirectUrl);
-                    }
-                    
+                        Title = "Forbidden",
+                        Summary = error == null ? "You do not have permission to do that." : error.ErrorMessage,
+                        Details = error == null ? "" : error.FullException
+                    }).WithStatusCode(statusCode);
+                                        
                     break;
                 case HttpStatusCode.Forbidden:
                     context.Response = RenderView(context, CustomErrors.Configuration.ErrorViews[HttpStatusCode.Forbidden], new

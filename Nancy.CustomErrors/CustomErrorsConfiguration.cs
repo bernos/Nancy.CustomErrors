@@ -6,16 +6,6 @@ namespace Nancy.CustomErrors
     public class CustomErrorsConfiguration
     {
         /// <summary>
-        /// Determines the url to redirect to when authorization fails
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public virtual string GetAuthorizationUrl(NancyContext context)
-        {
-            return "/account/login";
-        }
-
-        /// <summary>
         /// Converts a thrown exception to the appropriate ErrorResponse. Override this method if you need
         /// to handle custom exception types, or implement your own error handling logic. The default 
         /// implementation converts all thrown exceptions to a regular ErrorResponse with an HttpStatusCode
