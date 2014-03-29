@@ -5,6 +5,15 @@ namespace Nancy.CustomErrors
 {
     public class CustomErrorsConfiguration
     {
+        public string NotFoundTitle = "404 Not Found";
+        public string NotFoundSummary = "The request resource could not be found.";
+        public string ForbiddenTitle = "Forbidden";
+        public string ForbiddenSummary = "You do not have permission to do that.";
+        public string UnauthorizedTitle = "Unauthorized";
+        public string UnauthorizedSummary = "You do not have permission to do that.";
+        public string ErrorTitle = "Error";
+        public string ErrorSummary = "An unexpected error occurred.";
+
         /// <summary>
         /// Converts a thrown exception to the appropriate ErrorResponse. Override this method if you need
         /// to handle custom exception types, or implement your own error handling logic. The default 

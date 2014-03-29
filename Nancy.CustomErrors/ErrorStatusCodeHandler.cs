@@ -41,7 +41,7 @@ namespace Nancy.CustomErrors
                     // When this happens we still want to return our nice JSON response.
                     context.Response = new ErrorResponse(new Error
                     {
-                        Message = "The requested resource could not be found"
+                        Message = CustomErrors.Configuration.ErrorSummary
                     }, _serializer).WithStatusCode(statusCode);
                 } 
                 else if (!(context.Response is ErrorResponse))
@@ -52,7 +52,7 @@ namespace Nancy.CustomErrors
                         case HttpStatusCode.Unauthorized :
                             context.Response = new ErrorResponse(new Error
                             {
-                                Message = "You do not have permission to do that"
+                                Message = CustomErrors.Configuration.UnauthorizedSummary
                             }).WithStatusCode(statusCode);
                             break;
                         
@@ -73,20 +73,25 @@ namespace Nancy.CustomErrors
             switch (statusCode)
             {
                 case HttpStatusCode.Forbidden:
+                    model.Title = CustomErrors.Configuration.ForbiddenTitle;
+                    model.Summary = CustomErrors.Configuration.ForbiddenSummary;
+
+                    break;
+
                 case HttpStatusCode.Unauthorized:
-                    model.Title = "Forbidden";
-                    model.Summary = error == null ? "You do not have permission to do that." : error.ErrorMessage;
+                    model.Title = CustomErrors.Configuration.UnauthorizedTitle;
+                    model.Summary = error == null ? CustomErrors.Configuration.UnauthorizedSummary : error.ErrorMessage;
                                         
                     break;
 
                 case HttpStatusCode.NotFound:
-                    model.Title = "404 Not Found";
-                    model.Summary = "Sorry, the resource you requested was not found.";
+                    model.Title = CustomErrors.Configuration.NotFoundTitle;
+                    model.Summary = CustomErrors.Configuration.NotFoundSummary;
                     
                     break;
                 case HttpStatusCode.InternalServerError:
-                    model.Title = "Sorry, something went wrong";
-                    model.Summary = error == null ? "An unexpected error occurred." : error.ErrorMessage;
+                    model.Title = CustomErrors.Configuration.ErrorTitle;
+                    model.Summary = error == null ? CustomErrors.Configuration.ErrorSummary : error.ErrorMessage;
                     
                     break;
             }

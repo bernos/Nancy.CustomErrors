@@ -10,12 +10,15 @@ namespace Nancy.CustomErrors.Tests
     public class ErrorStatusCodeHandlerFixture
     {
         private readonly ConfigurableBootstrapper bootstrapper;
+        private readonly CustomErrorsConfiguration configuration;
 
         public ErrorStatusCodeHandlerFixture()
         {
+            configuration = new CustomErrorsConfiguration();
+
             bootstrapper = new ConfigurableBootstrapper(with =>
             {
-                with.ApplicationStartup((container, pipelines) => CustomErrors.Enable(pipelines, new CustomErrorsConfiguration()));
+                with.ApplicationStartup((container, pipelines) => CustomErrors.Enable(pipelines, configuration));
                 with.Module<TestModule>();
                 with.StatusCodeHandler<ErrorStatusCodeHandler>();
             });
@@ -34,6 +37,46 @@ namespace Nancy.CustomErrors.Tests
         }
 
         [Fact]
+        public void Should_return_json_for_application_json_accept_header()
+        {
+            var browser = new Browser(bootstrapper);
+
+            var response = browser.Get("/error", with => with.Header("Accept", "application/json"));
+
+            Assert.NotNull(response.Body.DeserializeJson<Error>());
+        }
+
+        [Fact]
+        public void Should_return_json_for_text_json_accept_header()
+        {
+            var browser = new Browser(bootstrapper);
+
+            var response = browser.Get("/error", with => with.Header("Accept", "text/json"));
+
+            Assert.NotNull(response.Body.DeserializeJson<Error>());
+        }
+        
+        [Fact]
+        public void Should_return_html_for_text_html_accept_header()
+        {
+            var browser = new Browser(bootstrapper);
+
+            var response = browser.Get("/error", with => with.Header("Accept", "text/html"));
+
+            response.Body["title"].ShouldExistOnce().And.ShouldContain(configuration.ErrorTitle);
+        }
+
+        [Fact]
+        public void Should_return_html_no_accept_header()
+        {
+            var browser = new Browser(bootstrapper);
+
+            var response = browser.Get("/error");
+
+            response.Body["title"].ShouldExistOnce().And.ShouldContain(configuration.ErrorTitle);
+        }
+
+        [Fact]
         public void Should_return_custom_error_response_for_uncaught_exception()
         {
             var browser = new Browser(bootstrapper);
@@ -41,7 +84,7 @@ namespace Nancy.CustomErrors.Tests
             var response = browser.Get("error", with => with.Header("Accept", "application/json"));
 
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-            Assert.Equal("An error occured", response.Body.DeserializeJson<Error>().Message);
+            Assert.Equal("ERROR MESSAGE HERE", response.Body.DeserializeJson<Error>().Message);
         }
 
         [Fact]
@@ -73,8 +116,8 @@ namespace Nancy.CustomErrors.Tests
 
             var response = browser.Get("error");
 
-            response.Body["title"].ShouldExistOnce().And.ShouldContain("Sorry, something went wrong");
-            response.Body["h1"].ShouldExistOnce().And.ShouldContain("An error occured");
+            response.Body["title"].ShouldExistOnce().And.ShouldContain(configuration.ErrorTitle);
+            response.Body["h1"].ShouldExistOnce().And.ShouldContain("ERROR MESSAGE HERE");
         }
     }
 
@@ -85,7 +128,7 @@ namespace Nancy.CustomErrors.Tests
         {
             Get["error"] = _ =>
             {
-                throw new Exception("An error occured");
+                throw new Exception("ERROR MESSAGE HERE");
             };
 
             Get["forbidden"] = _ => HttpStatusCode.Forbidden;
