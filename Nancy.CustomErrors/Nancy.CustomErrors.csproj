@@ -47,6 +47,7 @@
     <Compile Include="Error.cs" />
     <Compile Include="ErrorResponse.cs" />
     <Compile Include="ErrorStatusCodeHandler.cs" />
+    <Compile Include="ErrorViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
