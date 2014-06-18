@@ -55,7 +55,12 @@ namespace Nancy.CustomErrors
                                 Message = CustomErrors.Configuration.UnauthorizedSummary
                             }).WithStatusCode(statusCode);
                             break;
-                        
+                        case HttpStatusCode.NotFound :
+                            context.Response = new ErrorResponse(new Error
+                            {
+                                Message = CustomErrors.Configuration.NotFoundSummary
+                            }).WithStatusCode(statusCode);
+                            break;
                     }
                 }
 
