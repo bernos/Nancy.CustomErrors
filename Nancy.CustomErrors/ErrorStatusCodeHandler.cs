@@ -41,7 +41,7 @@ namespace Nancy.CustomErrors
                     // When this happens we still want to return our nice JSON response.
                     context.Response = new ErrorResponse(new Error
                     {
-                        Message = CustomErrors.Configuration.ErrorSummary
+                        Message = CustomErrors.Configuration.NotFoundSummary
                     }, _serializer).WithStatusCode(statusCode);
                 } 
                 else if (!(context.Response is ErrorResponse))
