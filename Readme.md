@@ -13,7 +13,9 @@ This work is *heavily* influenced by Paul Stovell's excellent [Consistent error 
 
 Use Nuget!
 
-	Install-Package Nancy.CustomErrors
+```
+Install-Package Nancy.CustomErrors
+```
 
 ## Usage
 
@@ -21,14 +23,15 @@ Use Nuget!
 
 Custom error handling is set up in the ApplicationStartup method of your Nancy Bootstrapper. In its simplest form, your simply call Nancy.CustomErrors.Enable, passing an IPipelines instance.
 
-	:::c#
-	protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
-	{
-		base.ApplicationStartup(container, pipelines);
+```csharp
+protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
+{
+	base.ApplicationStartup(container, pipelines);
 
-		// ...
-		CustomErrors.Enable(pipelines);
-	}
+	// ...
+	CustomErrors.Enable(pipelines);
+}
+```
 
 In this form, default configuration options will be assumed. The default configuration assumes the following
 
@@ -41,55 +44,57 @@ In this form, default configuration options will be assumed. The default configu
 
 Setting up custom configuration is a simple case of implementing an configuration class that extends Nancy.CustomErrors.CustomErrorsConfiguration, and passing an instance of the class along in the call to CustomErrors.Enable()
 
-	:::c#
-	public class MyErrorConfiguration : Nancy.CustomErrors.CustomErrorsConfiguration
+```csharp
+public class MyErrorConfiguration : Nancy.CustomErrors.CustomErrorsConfiguration
+{
+	public MyErrorConfiguration() : base()
 	{
-		public MyErrorConfiguration() : base()
-		{
-			// Map error status codes to custom view names
-			ErrorViews[HttpStatusCode.NotFound] = "CustomNotFoundView";
-			ErrorViews[HttpStatusCode.InternalServerError] = "CustomErrorView";
-			ErrorViews[HttpStatusCode.Forbidden] = "Forbidden";			
-		}
-
-		// Custom redirection handler for an unauthorised request
-		// Returning an empty string will result in the response being sent with HttpStatusCode.Forbidden
-		// Otherwise, return the url to redirect the client to. 
-		public override string GetAuthorizationUrl(NancyContext context) {
-			if (context.CurrentUser == null) {
-				return "/accounts/login"
-			}			
-			return String.Empty;
-		}
-
-		// Custom mapping of a thrown exception to an ErrorResponse with status code
-		// The implementation in this example is the default implementation used in
-		// Nancy.CustomErrors.CustomErrorConfiguration. Override this if you need to
-		// Map custom exception types to different status codes, or error objects.
-		// An example might be to map a custom security exception to HttpForbidden status
-		// code, rather than the default InternalServerError status code
-		public override ErrorResponse HandleError(NancyContext context, Exception ex, ISerializer serializer)
-		{
-			var error = new Error
-			{
-				FullException = ex.ToString(),
-				Message = ex.Message
-			};
-
-			return new ErrorResponse(error, serializer).WithStatusCode(HttpStatusCode.InternalServerError) as ErrorResponse;
-		}
+		// Map error status codes to custom view names
+		ErrorViews[HttpStatusCode.NotFound] = "CustomNotFoundView";
+		ErrorViews[HttpStatusCode.InternalServerError] = "CustomErrorView";
+		ErrorViews[HttpStatusCode.Forbidden] = "Forbidden";			
 	}
+
+	// Custom redirection handler for an unauthorised request
+	// Returning an empty string will result in the response being sent with HttpStatusCode.Forbidden
+	// Otherwise, return the url to redirect the client to. 
+	public override string GetAuthorizationUrl(NancyContext context) {
+		if (context.CurrentUser == null) {
+			return "/accounts/login"
+		}			
+		return String.Empty;
+	}
+
+	// Custom mapping of a thrown exception to an ErrorResponse with status code
+	// The implementation in this example is the default implementation used in
+	// Nancy.CustomErrors.CustomErrorConfiguration. Override this if you need to
+	// Map custom exception types to different status codes, or error objects.
+	// An example might be to map a custom security exception to HttpForbidden status
+	// code, rather than the default InternalServerError status code
+	public override ErrorResponse HandleError(NancyContext context, Exception ex, ISerializer serializer)
+	{
+		var error = new Error
+		{
+			FullException = ex.ToString(),
+			Message = ex.Message
+		};
+
+		return new ErrorResponse(error, serializer).WithStatusCode(HttpStatusCode.InternalServerError) as ErrorResponse;
+	}
+}
+```
 
 Once you've implemented a custom error handling configuration, just pass it along in the CustomErrors.Enable call in your bootstrapper
 
-	:::c#
-	protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
-	{
-		base.ApplicationStartup(container, pipelines);
+```csharp
+protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
+{
+	base.ApplicationStartup(container, pipelines);
 
-		// ...
-		CustomErrors.Enable(pipelines, new MyErrorConfiguration());
-	}
+	// ...
+	CustomErrors.Enable(pipelines, new MyErrorConfiguration());
+}
+```
 
 ### Error views
 
@@ -99,11 +104,11 @@ We use whatever view engine is presently configured in your project. By default 
 
 Here is a simple example using the Razor view engine
 	
-	:::html
-	@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
-	
-	<h1>Ouch!</h1>
-	<h2>@Model.Title</h2>
-	<p>@Model.Summary</p>
-	<p>@Model.Details</p>
+```html
+@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
 
+<h1>Ouch!</h1>
+<h2>@Model.Title</h2>
+<p>@Model.Summary</p>
+<p>@Model.Details</p>
+```
