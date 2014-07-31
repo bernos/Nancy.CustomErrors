@@ -6,13 +6,18 @@ namespace Nancy.CustomErrors
     public class CustomErrorsConfiguration
     {
         public string NotFoundTitle = "404 Not Found";
-        public string NotFoundSummary = "The request resource could not be found.";
+        public string NotFoundSummary = "The requested resource could not be found.";
         public string ForbiddenTitle = "Forbidden";
         public string ForbiddenSummary = "You do not have permission to do that.";
         public string UnauthorizedTitle = "Unauthorized";
         public string UnauthorizedSummary = "You do not have permission to do that.";
         public string ErrorTitle = "Error";
         public string ErrorSummary = "An unexpected error occurred.";
+
+        /// <summary>
+        /// If set to true, then we will emit full stack traces in our ErrorResponse
+        /// </summary>
+        public bool Debug = false;
 
         /// <summary>
         /// Converts a thrown exception to the appropriate ErrorResponse. Override this method if you need

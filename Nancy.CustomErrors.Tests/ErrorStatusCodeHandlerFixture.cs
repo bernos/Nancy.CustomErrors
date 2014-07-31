@@ -33,7 +33,7 @@ namespace Nancy.CustomErrors.Tests
             var response = browser.Get("/nuffin", with => with.Header("Accept", "application/json"));
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-            Assert.Equal("The requested resource could not be found", response.Body.DeserializeJson<Error>().Message);
+            Assert.Equal("The requested resource could not be found.", response.Body.DeserializeJson<Error>().Message);
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace Nancy.CustomErrors.Tests
         {
             var browser = new Browser(bootstrapper);
 
-            var response = browser.Get("error", with => with.Header("Accept", "application/json"));
+            var response = browser.Get("/error", with => with.Header("Accept", "application/json"));
 
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
             Assert.Equal("ERROR MESSAGE HERE", response.Body.DeserializeJson<Error>().Message);
@@ -118,6 +118,30 @@ namespace Nancy.CustomErrors.Tests
 
             response.Body["title"].ShouldExistOnce().And.ShouldContain(configuration.ErrorTitle);
             response.Body["h1"].ShouldExistOnce().And.ShouldContain("ERROR MESSAGE HERE");
+        }
+
+        [Fact]
+        public void Should_suppress_full_stack_trace_by_default()
+        {
+            var browser = new Browser(bootstrapper);
+
+            var response = browser.Get("/err", with => with.Header("Accept", "application/json"));
+
+            Assert.Null(response.Body.DeserializeJson<Error>().FullException);
+        }
+
+        [Fact]
+        public void Should_expose_full_stack_trace_in_debug_mode()
+        {
+            var browser = new Browser(bootstrapper);
+
+            CustomErrors.Configuration.Debug = true;
+
+            var response = browser.Get("/error", with => with.Header("Accept", "application/json"));
+            
+            Assert.NotNull(response.Body.DeserializeJson<Error>().FullException);
+
+            CustomErrors.Configuration.Debug = false;
         }
     }
 

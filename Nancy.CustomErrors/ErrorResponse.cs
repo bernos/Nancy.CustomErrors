@@ -10,6 +10,11 @@ namespace Nancy.CustomErrors
         public ErrorResponse(Error error) : this(error, new DefaultJsonSerializer()) { }
         public ErrorResponse(Error error, ISerializer serializer) : base(error, serializer)
         {
+            if (!CustomErrors.Configuration.Debug)
+            {
+                error.FullException = null;
+            }
+
             _error = error;
         }
     }
