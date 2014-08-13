@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using Nancy.ErrorHandling;
@@ -101,7 +103,26 @@ namespace Nancy.CustomErrors
                     break;
             }
 
-            context.Response = RenderView(context, CustomErrors.Configuration.ErrorViews[statusCode], model).WithStatusCode(statusCode);
+            try
+            {
+                context.Response =
+                    RenderView(context, CustomErrors.Configuration.ErrorViews[statusCode], model)
+                        .WithStatusCode(statusCode);
+            }
+            catch(Exception e)
+            {
+                context.Response = new Response
+                {
+                    StatusCode = HttpStatusCode.InternalServerError,
+                    ContentType = "text/plain",
+                    Contents = stream =>
+                    {
+                        var writer = new StreamWriter(stream);
+                        writer.AutoFlush = true;
+                        writer.Write(string.Format("Could not locate your error view! Details: {0}", e.Message));
+                    }
+                };
+            }
         }
 
         private static bool ShouldRenderFriendlyErrorPage(NancyContext context)
