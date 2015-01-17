@@ -14,6 +14,8 @@ namespace Nancy.CustomErrors
         public string ErrorTitle = "Error";
         public string ErrorSummary = "An unexpected error occurred.";
 
+        public bool AlwaysReturnJson = false;
+
         /// <summary>
         /// If set to true, then we will emit full stack traces in our ErrorResponse
         /// </summary>

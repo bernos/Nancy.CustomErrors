@@ -127,6 +127,11 @@ namespace Nancy.CustomErrors
 
         private static bool ShouldRenderFriendlyErrorPage(NancyContext context)
         {
+            if (CustomErrors.Configuration.AlwaysReturnJson)
+            {
+                return false;
+            }
+
             var ranges =
                 context.Request.Headers.Accept.OrderByDescending(o => o.Item2)
                     .Select(o => MediaRange.FromString(o.Item1))
