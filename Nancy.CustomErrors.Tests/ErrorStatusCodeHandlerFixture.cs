@@ -143,6 +143,15 @@ namespace Nancy.CustomErrors.Tests
 
             CustomErrors.Configuration.Debug = false;
         }
+
+        [Fact]
+        public void Should_retain_headers_already_set()
+        {
+            var browser = new Browser(bootstrapper);
+            var response = browser.Get("/headers", with => with.Header("Accept", "application/json"));
+
+            Assert.NotNull(response.Headers.Where(h => h.Key == "CustomHeader"));
+        }
     }
 
 
@@ -157,6 +166,10 @@ namespace Nancy.CustomErrors.Tests
 
             Get["forbidden"] = _ => HttpStatusCode.Forbidden;
             Get["unauthorised"] = _ => HttpStatusCode.Unauthorized;
+            Get["headers"] =
+                _ =>
+                    new Response().WithStatusCode(HttpStatusCode.InternalServerError)
+                        .WithHeader("CustomHeader", "CustomHeaderValue");
         }
     }
 }
