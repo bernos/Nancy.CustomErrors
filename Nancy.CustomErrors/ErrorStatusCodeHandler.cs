@@ -34,39 +34,49 @@ namespace Nancy.CustomErrors
 
         public void Handle(HttpStatusCode statusCode, NancyContext context)
         {
+            var headers = context.Response.Headers.Select(h => Tuple.Create(h.Key, h.Value)).ToArray();
+
             if (!ShouldRenderFriendlyErrorPage(context))
             {
+                // Assume a valid error response was built earlier in the request lifecycle
+                // Nothing more for us to do here, so just bail out.
+                if (context.Response is ErrorResponse)
+                {
+                    return;
+                }
+
+                var err = new Error
+                {
+                    Message = CustomErrors.Configuration.ErrorSummary
+                };
+
                 if (context.Response is NotFoundResponse)
                 {
                     // Normally we return 404's ourselves so we have an ErrorResponse. 
                     // But if no route is matched, Nancy will set a NotFound response itself. 
                     // When this happens we still want to return our nice JSON response.
-                    context.Response = new ErrorResponse(new Error
-                    {
-                        Message = CustomErrors.Configuration.NotFoundSummary
-                    }, _serializer).WithStatusCode(statusCode);
+                    err.Message = CustomErrors.Configuration.NotFoundSummary;
                 } 
-                else if (!(context.Response is ErrorResponse))
+                else
                 {
                     switch (statusCode)
                     {
                         case HttpStatusCode.Forbidden :
                         case HttpStatusCode.Unauthorized :
-                            context.Response = new ErrorResponse(new Error
-                            {
-                                Message = CustomErrors.Configuration.UnauthorizedSummary
-                            }).WithStatusCode(statusCode);
+                            err.Message = CustomErrors.Configuration.UnauthorizedSummary;
                             break;
                         case HttpStatusCode.NotFound :
+                            err.Message = CustomErrors.Configuration.NotFoundSummary;
                             context.Response = new ErrorResponse(new Error
                             {
                                 Message = CustomErrors.Configuration.NotFoundSummary
-                            }).WithStatusCode(statusCode);
+                            });
                             break;
                     }
                 }
 
-                // Pass the existing response through
+                context.Response = new ErrorResponse(err, _serializer).WithHeaders(headers).WithStatusCode(statusCode);
+                
                 return;
             }
             
@@ -107,7 +117,8 @@ namespace Nancy.CustomErrors
             {
                 context.Response =
                     RenderView(context, CustomErrors.Configuration.ErrorViews[statusCode], model)
-                        .WithStatusCode(statusCode);
+                        .WithStatusCode(statusCode)
+                        .WithHeaders(headers);
             }
             catch(Exception e)
             {
