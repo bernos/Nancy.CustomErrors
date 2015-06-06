@@ -1,4 +1,4 @@
-Properties {
+properties {
     $projects = $null
     $configuration = "Release"
     $source_folder = $null
@@ -8,34 +8,37 @@ Properties {
 
 Task Default -Depends Build
 
+Task RestorePackages {
+	Exec { nuget restore -PackagesDirectory .\packages }
+}
 
 Task Publish -Depends Package {
     $version = getVersionBase
     
-    foreach($project in $projects) {
+    $projects | % {
         Get-ChildItem | Where-Object -FilterScript {
             ($_.Name.Contains("$project.$version")) -and !($_.Name.Contains(".symbols")) -and ($_.Extension -eq '.nupkg')    
-        } | ForEach-Object {
-            exec { nuget push $_.FullName }
+        } | % {
+            exec { nuget push $_.Fullname }
         }
     }
 }
 
 Task Package -Depends Test {
-    foreach($project in $projects) {
-        Get-ChildItem -Path "$project\*.csproj" | ForEach-Object {            
-            exec { nuget pack -sym $_.FullName -Prop Configuration=$configuration }
+    $projects | % {
+        Get-ChildItem -Path "$_\*.csproj" | % {
+            exec { nuget pack -sym $_.Fullname -Prop Configuration=$configuration }
         }        
     }
 }
 
 Task Test -Depends Build {
     Get-ChildItem $source_folder -Recurse -Include *Tests.csproj | % {
-        Exec { & ".\packages\xunit.runners.1.9.2\tools\xunit.console.clr4.exe" "$($_.DirectoryName)\bin\$configuration\$($_.BaseName).dll" /noshadow }
+        Exec { & ".\packages\xunit.runner.console.2.0.0\tools\xunit.console.exe" "$($_.DirectoryName)\bin\$configuration\$($_.BaseName).dll" }
     }
 }
 
-Task Build -Depends Clean,Set-Versions {
+Task Build -Depends Clean,Set-Versions,RestorePackages {
     Exec { msbuild "$solution" /t:Build /p:Configuration=$configuration } 
 }
 

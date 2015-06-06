@@ -37,7 +37,6 @@ $properties = @{
 
 }
 
-
-import-module .\packages\psake.4.4.1\tools\psake.psm1
+import-module .\packages\psake.4.4.2\tools\psake.psm1
 
 invoke-psake $build_file $task_list -Properties $properties

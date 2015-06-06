@@ -9,10 +9,7 @@ namespace Nancy.CustomErrors
         private static CustomErrorsConfiguration _configuration;
         public static CustomErrorsConfiguration Configuration
         {
-            get
-            {
-                return _configuration;
-            }
+            get { return _configuration ?? (_configuration = new CustomErrorsConfiguration()); }
         }
 
         public static void Enable(IPipelines pipelines, CustomErrorsConfiguration configuration)
