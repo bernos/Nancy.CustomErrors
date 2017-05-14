@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package >
+	<metadata>
+		<id>Nancy.CustomErrors</id>
+		<version>2.0.0-pre01</version>
+		<title>Nancy Custom Errors</title>
+		<authors>ravensorb</authors>
+		<owners>ravensorb</owners>
+		<projectUrl>https://github.com/bernos/Nancy.CustomErrors</projectUrl>
+		<releaseNotes>Adds exception handling for cases when custom error views cannot be found</releaseNotes>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Nancy Custom Errors</description>
+		<copyright>Copyright 2017</copyright>
+		<tags>Nancyfx</tags>
+		<dependencies>
+			<group>
+				<dependency id="Nancy" version="2.0.0-clinteastwood" />
+			</group>
+			<group targetFramework="net461">
+				<dependency id="Nancy" version="2.0.0-clinteastwood" />
+			</group>
+		</dependencies>
+	</metadata>
+	<files>
+		<!-- Framework: .NET 4.6.1 -->
+		<file src="..\src\Nancy.CustomErrors\bin\$Configuration$\Nancy.CustomErrors.dll" target="lib\net461" />
+		<file src="..\src\Nancy.CustomErrors\bin\$Configuration$\Nancy.CustomErrors.pdb" target="lib\net461" />
+	</files>
+</package>

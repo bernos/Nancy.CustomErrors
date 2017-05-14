@@ -12,8 +12,7 @@ namespace Nancy.CustomErrors
 	{
 		private readonly ISerializer _serializer;
 
-		public ErrorStatusCodeHandler(IViewFactory viewFactory)
-			: this(viewFactory, new DefaultJsonSerializer())
+		public ErrorStatusCodeHandler(IViewFactory viewFactory) : base(viewFactory)
 		{
 		}
 
@@ -71,12 +70,12 @@ namespace Nancy.CustomErrors
 							context.Response = new ErrorResponse(new Error
 							{
 								Message = CustomErrors.Configuration.NotFoundSummary
-							});
+							}, _serializer, context.Environment);
 							break;
 					}
 				}
 
-				context.Response = new ErrorResponse(err, _serializer).WithHeaders(headers).WithStatusCode(statusCode);
+				context.Response = new ErrorResponse(err, _serializer, context.Environment).WithHeaders(headers).WithStatusCode(statusCode);
 				
 				return;
 			}
@@ -144,27 +143,10 @@ namespace Nancy.CustomErrors
 				return false;
 			}
 
-			var ranges =
-				context.Request.Headers.Accept.OrderByDescending(o => o.Item2)
-					.Select(o => MediaRange.FromString(o.Item1))
-					.ToList();
-
-			foreach (var range in ranges)
+			if (context.Request.Headers.Accept.OrderByDescending(o => o.Item2)
+				.Any(o => o.Item1 == "application/json" || o.Item1 == "text/json"))
 			{
-				if (range.Matches("application/json"))
-				{
-					return false;
-				}
-
-				if (range.Matches("text/json"))
-				{
-					return false;
-				}
-
-				if (range.Matches("text/html"))
-				{
-					return true;
-				}
+				return false;
 			}
 
 			return true;

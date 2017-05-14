@@ -39,7 +39,7 @@ namespace Nancy.CustomErrors
                 Message = ex.Message
             };
 
-            return new ErrorResponse(error, serializer).WithStatusCode(HttpStatusCode.InternalServerError) as ErrorResponse;
+            return new ErrorResponse(error, serializer, context.Environment).WithStatusCode(HttpStatusCode.InternalServerError) as ErrorResponse;
         }
 
         /// <summary>

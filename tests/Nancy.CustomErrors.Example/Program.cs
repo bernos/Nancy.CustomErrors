@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Nancy.Hosting.Self;
+using Nancy.Responses;
 
 namespace Nancy.CustomErrors.Example
 {
@@ -25,7 +26,7 @@ namespace Nancy.CustomErrors.Example
         {
             base.ApplicationStartup(container, pipelines);
 
-            CustomErrors.Enable(pipelines, new ErrorConfiguration());
+            CustomErrors.Enable(pipelines, new ErrorConfiguration(), new DefaultJsonSerializer(this.GetEnvironment()));
         }
     }
 
@@ -34,17 +35,17 @@ namespace Nancy.CustomErrors.Example
         public TestModule()
             : base("/")
         {
-            Get["/test"] = _ =>
+            Get("/test", _ =>
             {
                 var response = Response.AsText("test", "application/json");
                 response.StatusCode = HttpStatusCode.InternalServerError;
                 return response;
-            };
+            });
 
-            Get["/err"] = _ =>
+            Get("/err", _ =>
             {
                 throw new Exception("asdadsfdaf");
-            };
+            });
         }
     }
 
@@ -65,7 +66,7 @@ namespace Nancy.CustomErrors.Example
                 Message = ex.Message
             };
 
-            return new ErrorResponse(error, serializer).WithStatusCode(HttpStatusCode.InternalServerError) as ErrorResponse;
+            return new ErrorResponse(error, serializer, context.Environment).WithStatusCode(HttpStatusCode.InternalServerError) as ErrorResponse;
         }
     }
 }
