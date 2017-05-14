@@ -7,11 +7,6 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("Nancy.CustomErrors")]
 [assembly: AssemblyDescription("Simple custom error handling for Nancyfx projects")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Brendan McMahon")]
-[assembly: AssemblyProduct("Nancy.CustomErrors")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
-[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -32,5 +27,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("2.0.0")]
-[assembly: AssemblyVersion("2.0.0")]
-[assembly: AssemblyFileVersion("2.0.0")]
+//[assembly: AssemblyVersion("2.0.0")]
+//[assembly: AssemblyFileVersion("2.0.0")]

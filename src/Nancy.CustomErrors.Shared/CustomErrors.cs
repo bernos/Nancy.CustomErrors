@@ -12,7 +12,7 @@ namespace Nancy.CustomErrors
             get { return _configuration ?? (_configuration = new CustomErrorsConfiguration()); }
         }
 
-        public static void Enable(IPipelines pipelines, CustomErrorsConfiguration configuration, ISerializer serializer)
+		public static void Enable(IPipelines pipelines, CustomErrorsConfiguration configuration, ISerializer serializer)
         {
             if (pipelines == null)
             {
