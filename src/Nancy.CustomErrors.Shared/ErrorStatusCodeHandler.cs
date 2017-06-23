@@ -1,29 +1,61 @@
+// ***********************************************************************
+// Assembly         : Nancy.CustomErrors
+// Author           : 
+// Created          : 05-13-2017
+//
+// Last Modified By : 
+// Last Modified On : 05-13-2017
+// ***********************************************************************
+// <copyright file="ErrorStatusCodeHandler.cs" company="">
+//     Copyright (c) . All rights reserved.
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+using Nancy.ErrorHandling;
+using Nancy.ViewEngines;
 using System;
 using System.IO;
 using System.Linq;
-using Nancy.ErrorHandling;
-using Nancy.Responses;
-using Nancy.Responses.Negotiation;
-using Nancy.ViewEngines;
 
 namespace Nancy.CustomErrors
 {
+	/// <summary>
+	/// Class ErrorStatusCodeHandler.
+	/// </summary>
 	public class ErrorStatusCodeHandler : DefaultViewRenderer, IStatusCodeHandler
 	{
+		/// <summary>
+		/// The serializer
+		/// </summary>
 		private readonly ISerializer _serializer;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ErrorStatusCodeHandler"/> class.
+		/// </summary>
+		/// <param name="viewFactory">The view factory.</param>
 		public ErrorStatusCodeHandler(IViewFactory viewFactory) : base(viewFactory)
 		{
 		}
 
 		//Made this private as some DI containers like Autofac and Ninject have issues when multiple registered instances of an interface exist and
 		// convention based DI is used for constructors
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ErrorStatusCodeHandler"/> class.
+		/// </summary>
+		/// <param name="viewFactory">The view factory.</param>
+		/// <param name="serializer">The serializer.</param>
 		private ErrorStatusCodeHandler(IViewFactory viewFactory, ISerializer serializer)
 			: base(viewFactory)
 		{
 			_serializer = serializer;
 		}
 
+		/// <summary>
+		/// Handleses the status code.
+		/// </summary>
+		/// <param name="statusCode">The status code.</param>
+		/// <param name="context">The context.</param>
+		/// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
 		public bool HandlesStatusCode(HttpStatusCode statusCode, NancyContext context)
 		{
 			return statusCode == HttpStatusCode.NotFound
@@ -32,6 +64,11 @@ namespace Nancy.CustomErrors
 				   || statusCode == HttpStatusCode.Unauthorized;
 		}
 
+		/// <summary>
+		/// Handles the specified status code.
+		/// </summary>
+		/// <param name="statusCode">The status code.</param>
+		/// <param name="context">The context.</param>
 		public void Handle(HttpStatusCode statusCode, NancyContext context)
 		{			
 			var headers = context.Response.Headers.Select(h => Tuple.Create(h.Key, h.Value)).ToArray();
@@ -47,7 +84,7 @@ namespace Nancy.CustomErrors
 
 				var err = new Error
 				{
-					Message = CustomErrors.Configuration.ErrorSummary
+					Message = CustomErrors.Configuration.ErrorSummary,					
 				};
 
 				if (context.Response is NotFoundResponse)
@@ -81,10 +118,11 @@ namespace Nancy.CustomErrors
 			}
 			
 			var error = context.Response as ErrorResponse;
-
+			
 			var model = new ErrorViewModel
 			{
-				Details = error == null ? "" : error.FullException
+				Details = error == null ? "" : error.FullException,
+				Message = error == null ? "" : error.ErrorMessage
 			};
 		
 			switch (statusCode)
@@ -128,14 +166,18 @@ namespace Nancy.CustomErrors
 					ContentType = "text/plain",
 					Contents = stream =>
 					{
-						var writer = new StreamWriter(stream);
-						writer.AutoFlush = true;
-						writer.Write(string.Format("Could not locate your error view! Details: {0}", e.Message));
+						var writer = new StreamWriter(stream) {AutoFlush = true};
+						writer.Write($"Could not locate your error view! Details: {e.Message}");
 					}
 				};
 			}
 		}
 
+		/// <summary>
+		/// Shoulds the render friendly error page.
+		/// </summary>
+		/// <param name="context">The context.</param>
+		/// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
 		private static bool ShouldRenderFriendlyErrorPage(NancyContext context)
 		{
 			if (CustomErrors.Configuration.AlwaysReturnJson)

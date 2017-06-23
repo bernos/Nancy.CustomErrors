@@ -1,37 +1,67 @@
-﻿using System;
-using System.Net;
+﻿// ***********************************************************************
+// Assembly         : Nancy.CustomErrors.Tests
+// Author           : 
+// Created          : 05-13-2017
+//
+// Last Modified By : 
+// Last Modified On : 06-23-2017
+// ***********************************************************************
+// <copyright file="CustomErrorsFixture.cs" company="">
+//     Copyright ©  2014
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
 using Nancy.Bootstrapper;
-using Nancy.Configuration;
-using Nancy.Responses;
-using Nancy.Testing;
 using NSubstitute;
+using System;
 using Xunit;
 
 namespace Nancy.CustomErrors.Tests
 {
-    public class CustomErrorsFixture
-    {
-        [Fact]
-        public void Should_throw_with_null_pipelines_passed_to_enable()
-        {
-            Assert.Throws<ArgumentNullException>(() => CustomErrors.Enable(null, new CustomErrorsConfiguration(), new DefaultJsonSerializer(new DefaultNancyEnvironment())));
-        }
+	/// <summary>
+	/// Class CustomErrorsFixture.
+	/// </summary>
+	public class CustomErrorsFixture
+	{
+		/// <summary>
+		/// Shoulds the throw with null pipelines passed to enable.
+		/// </summary>
+		[Fact]
+		public void Should_throw_with_null_pipelines_passed_to_enable()
+		{
+			Assert.Throws<ArgumentNullException>(() => CustomErrors.Enable(null, new CustomErrorsConfiguration()));
+		}
 
-        [Fact]
-        public void Should_throw_with_null_configuration_passed_to_enable()
-        {
-            Assert.Throws<ArgumentNullException>(() => CustomErrors.Enable(Substitute.For<IPipelines>(), null, new DefaultJsonSerializer(new DefaultNancyEnvironment())));
-        }
+		/// <summary>
+		/// Shoulds the throw with null configuration passed to enable.
+		/// </summary>
+		[Fact]
+		public void Should_throw_with_null_configuration_passed_to_enable()
+		{
+			Assert.Throws<ArgumentNullException>(() => CustomErrors.Enable(Substitute.For<IPipelines>(), null));
+		}
 
-        [Fact]
-        public void Should_add_error_hook_when_enabled()
-        {
-            var pipelines = Substitute.For<IPipelines>();
-            pipelines.OnError.Returns(Substitute.For<ErrorPipeline>());
+		/// <summary>
+		/// Shoulds the add error hook when enabled.
+		/// </summary>
+		[Fact]
+		public void Should_add_error_hook_when_enabled()
+		{
+			var pipelines = Substitute.For<IPipelines>();
+			pipelines.OnError.Returns(Substitute.For<ErrorPipeline>());
 
-            CustomErrors.Enable(pipelines, Substitute.For<CustomErrorsConfiguration>(), new DefaultJsonSerializer(new DefaultNancyEnvironment()));
+			try
+			{
+				var cfg = Substitute.For<CustomErrorsConfiguration>();
 
-            pipelines.OnError.Received(1).AddItemToEndOfPipeline(Arg.Any<Func<NancyContext, Exception, Response>>());
-        }
-    }
+				CustomErrors.Enable(pipelines, cfg);
+
+				pipelines.OnError.Received(1).AddItemToEndOfPipeline(Arg.Any<Func<NancyContext, Exception, Response>>());
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
+		}
+	}
 }
