@@ -1,0 +1,3 @@
+﻿<p>Title: @Model.Title</p>
+<p>Summary: @Model.Summary</p>
+<p>Details: <br/>@Model.Details</p>
